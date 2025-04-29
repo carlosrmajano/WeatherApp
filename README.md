@@ -1,4 +1,4 @@
-# Weather App
+![image](https://github.com/user-attachments/assets/04a4628b-dbe7-4f27-9239-87f8cf6c634d)# Weather App
 
 Aplicación web que muestra el clima actual y el pronóstico del clima para los próximos 5 días en San Salvador. Esta aplicación utiliza la API de OpenWeatherMap para obtener los datos meteorológicos y está construida con ASP.NET Core y Blazor Server.
 
@@ -12,11 +12,13 @@ Aplicación web que muestra el clima actual y el pronóstico del clima para los 
 
 ## Funcionalidades
 
-- **Clima Actual**: Muestra la temperatura actual, descripción y el clima en San Salvador.
-- ![image](https://github.com/user-attachments/assets/760b0fb6-6384-48e2-b4f9-77b2d1dceca1)
+- **Clima Actual**: Muestra la temperatura actual, descripción y el clima en San Salvador por defecto, se agrega dropdown con lista de ciudades disponibles.
+- ![image](https://github.com/user-attachments/assets/13d7d1ae-2883-40bc-9f63-f1d4116374f0)
 
-- **Pronóstico de Clima**: Muestra el pronóstico de clima para los siguientes 5 días, con temperaturas mínimas y máximas por día.
-![image](https://github.com/user-attachments/assets/f4c78ebb-b21f-43c7-b4e8-73286d828f2a)
+
+- **Pronóstico de Clima**: Muestra el pronóstico de clima para los siguientes 5 días, con temperaturas mínimas y máximas por día. San Salvador por defecto, se agrega dropdown con lista de ciudades disponibles.
+- ![image](https://github.com/user-attachments/assets/c3636778-9e71-4d68-8c49-1fb1b3e5980e)
+
 
 ## Requisitos Previos
 
