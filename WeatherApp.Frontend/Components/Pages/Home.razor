@@ -1,0 +1,61 @@
+﻿@page "/"
+@using WeatherApp.Frontend.Models
+@inject IHttpClientFactory ClientFactory
+
+<h1 class="text-center mb-4">Clima en San Salvador</h1>
+
+@if (current == null)
+{
+    <p class="text-center"><em>Cargando datos...</em></p>
+}
+else
+{
+    <div class="card text-center w-50 mx-auto p-4">
+        <h3>@current.City</h3>
+        <i class="@GetWeatherIcon(current.Description) display-3 mb-2"></i>
+
+        <p class="display-4">@current.Temperature °C</p>
+        <p class="text-capitalize">@current.Description</p>
+        <small>Última actualización: @current.Date.ToLocalTime()</small>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/forecast" class="btn btn-primary btn-lg">
+            Ver Pronóstico Semanal
+        </a>
+    </div>
+}
+
+@code {
+    private CurrentWeather current;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var http = ClientFactory.CreateClient("WeatherApi");
+
+        try
+        {
+            current = await http.GetFromJsonAsync<CurrentWeather>("/weather/current");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error cargando clima: " + ex.Message);
+        }
+    }
+    private string GetWeatherIcon(string description)
+    {
+        var lower = description.ToLower();
+
+        return lower switch
+        {
+            var d when d.Contains("clear") => "wi wi-day-sunny",
+            var d when d.Contains("cloud") => "wi wi-day-cloudy",
+            var d when d.Contains("rain") => "wi wi-rain",
+            var d when d.Contains("thunder") => "wi wi-thunderstorm",
+            var d when d.Contains("snow") => "wi wi-snow",
+            var d when d.Contains("mist") || d.Contains("fog") => "wi wi-fog",
+            _ => "wi wi-na"
+        };
+    }
+
+}

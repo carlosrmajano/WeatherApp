@@ -1,0 +1,66 @@
+﻿@page "/forecast"
+@using WeatherApp.Frontend.Models
+@inject IHttpClientFactory ClientFactory
+
+<h3>Pronóstico Semanal - San Salvador</h3>
+
+@if (forecast == null)
+{
+    <p><em>Cargando datos...</em></p>
+}
+else
+{
+    <div class="row">
+        @foreach (var day in forecast)
+        {
+            <div class="col-md-3 mb-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5>@day.Date.ToString("dddd")</h5>
+                        <p>@day.Date.ToString("dd MMM")</p>
+                        <i class="@GetWeatherIcon(day.Description) display-6 mb-2"></i>
+                        <p class="mb-1">
+                            <strong>Min:</strong> @day.MinTemperature °C,
+                            <strong>Max:</strong> @day.MaxTemperature °C
+                        </p>
+                        <p class="text-capitalize">@day.Description</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<WeatherForecast> forecast;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var http = ClientFactory.CreateClient("WeatherApi");
+
+        try
+        {
+            forecast = await http.GetFromJsonAsync<List<WeatherForecast>>("/weather/forecast?city=San Salvador");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+        }
+    }
+    private string GetWeatherIcon(string description)
+    {
+        var lower = description.ToLower();
+
+        return lower switch
+        {
+            var d when d.Contains("clear") => "wi wi-day-sunny",
+            var d when d.Contains("cloud") => "wi wi-day-cloudy",
+            var d when d.Contains("rain") => "wi wi-rain",
+            var d when d.Contains("thunder") => "wi wi-thunderstorm",
+            var d when d.Contains("snow") => "wi wi-snow",
+            var d when d.Contains("mist") || d.Contains("fog") => "wi wi-fog",
+            _ => "wi wi-na"
+        };
+    }
+
+}
