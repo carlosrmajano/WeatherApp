@@ -13,7 +13,10 @@ Aplicación web que muestra el clima actual y el pronóstico del clima para los 
 ## Funcionalidades
 
 - **Clima Actual**: Muestra la temperatura actual, descripción y el clima en San Salvador.
+- ![image](https://github.com/user-attachments/assets/760b0fb6-6384-48e2-b4f9-77b2d1dceca1)
+
 - **Pronóstico de Clima**: Muestra el pronóstico de clima para los siguientes 5 días, con temperaturas mínimas y máximas por día.
+![image](https://github.com/user-attachments/assets/f4c78ebb-b21f-43c7-b4e8-73286d828f2a)
 
 ## Requisitos Previos
 
