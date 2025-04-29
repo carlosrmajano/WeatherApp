@@ -2,16 +2,34 @@
 @using WeatherApp.Frontend.Models
 @inject IHttpClientFactory ClientFactory
 
-<h3>Pronóstico Semanal - San Salvador</h3>
-
-@if (forecast == null)
+<h3>Pronóstico Semanal – @_selectedCity</h3>
+<div class="mb-3">
+    <label for="citySelect" class="form-label">Selecciona una ciudad:</label>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            @_selectedCity
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            @foreach (var city in availableCities)
+            {
+                <li>
+                    <a class="dropdown-item @(_selectedCity == city ? "active" : "")" @onclick="() => SelectCity(city)">
+                        @city
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+@if (forecastData == null || !forecastData.Any())
 {
-    <p><em>Cargando datos...</em></p>
+    <p><em>No hay datos disponibles.</em></p>
 }
 else
 {
     <div class="row">
-        @foreach (var day in forecast)
+        @foreach (var day in forecastData)
         {
             <div class="col-md-3 mb-3">
                 <div class="card">
@@ -19,7 +37,7 @@ else
                         <h5>@day.Date.ToString("dddd")</h5>
                         <p>@day.Date.ToString("dd MMM")</p>
                         <i class="@GetWeatherIcon(day.Description) display-6 mb-2"></i>
-                        <p class="mb-1">
+                        <p>
                             <strong>Min:</strong> @day.MinTemperature °C,
                             <strong>Max:</strong> @day.MaxTemperature °C
                         </p>
@@ -30,27 +48,46 @@ else
         }
     </div>
 }
-
 @code {
-    private List<WeatherForecast> forecast;
+    private List<WeatherForecast> forecastData = new List<WeatherForecast>();
+    private List<string> availableCities = new()
+    {
+        "San Salvador", "Santa Ana", "San Miguel", "La Libertad", "Usulután"
+    };
+
+    // Campo respaldo
+    private string _selectedCity = "San Salvador";
+    private async Task SelectCity(string city)
+    {
+        _selectedCity = city;
+        await LoadForecastAsync();
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
-        var http = ClientFactory.CreateClient("WeatherApi");
-
+        await LoadForecastAsync();
+    }
+    private async Task LoadForecastAsync()
+    {
         try
         {
-            forecast = await http.GetFromJsonAsync<List<WeatherForecast>>("/weather/forecast?city=San Salvador");
+            var http = ClientFactory.CreateClient("WeatherApi");
+            forecastData = await http.GetFromJsonAsync<List<WeatherForecast>>($"/weather/forecast?city={Uri.EscapeDataString(_selectedCity)}");
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Error: " + ex.Message);
+            Console.WriteLine("Error al cargar pronóstico: " + ex.Message);
+            forecastData = new List<WeatherForecast>();
+        }
+        finally
+        {
+            StateHasChanged();
         }
     }
     private string GetWeatherIcon(string description)
     {
         var lower = description.ToLower();
-
         return lower switch
         {
             var d when d.Contains("clear") => "wi wi-day-sunny",
@@ -62,5 +99,4 @@ else
             _ => "wi wi-na"
         };
     }
-
 }

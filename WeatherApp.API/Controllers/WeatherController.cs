@@ -16,7 +16,7 @@ namespace WeatherApp.API.Controllers
         }
 
         [HttpGet("current")]
-        public async Task<IActionResult> GetCurrent([FromQuery] string city = "San Salvador")
+        public async Task<IActionResult> GetCurrent(string city = "San Salvador")
         {
             try
             {
@@ -29,7 +29,7 @@ namespace WeatherApp.API.Controllers
             }
         }
         [HttpGet("forecast")]
-        public async Task<IActionResult> GetForecast([FromQuery] string city = "San Salvador")
+        public async Task<IActionResult> GetForecast([FromQuery] string city)
         {
             try
             {

@@ -2,24 +2,63 @@
 @using WeatherApp.Frontend.Models
 @inject IHttpClientFactory ClientFactory
 
-<h3>Clima actual - San Salvador</h3>
-
+<h3>Clima actual - @_selectedCity</h3>
+<div class="mb-3">
+    <label for="citySelect" class="form-label">Selecciona una ciudad:</label>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                data-bs-toggle="dropdown" aria-expanded="false">
+            @_selectedCity
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            @foreach (var city in availableCities)
+            {
+                <li>
+                    <a class="dropdown-item @(_selectedCity == city ? "active" : "")" @onclick="() => SelectCity(city)">
+                        @city
+                    </a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
 @if (current == null)
 {
     <p><em>Cargando...</em></p>
 }
 else
 {
-    <div class="card p-3 text-center w-50 mx-auto">
-        <h4>@current.City</h4>
-        <p class="display-4">@current.Temperature&nbsp;°C</p>
-        <p>@current.Description</p>
+    <div class="card text-center w-50 mx-auto p-4">
+        <h3>@current.City</h3>
+        <i class="@GetWeatherIcon(current.Description) display-3 mb-2"></i>
+
+        <p class="display-4">@current.Temperature °C</p>
+        <p class="text-capitalize">@current.Description</p>
         <small>Última actualización: @current.Date.ToLocalTime()</small>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="/forecast" class="btn btn-primary btn-lg">
+            Ver Pronóstico Semanal
+        </a>
     </div>
 }
 
 @code {
     private CurrentWeather current;
+    private List<string> availableCities = new()
+    {
+        "San Salvador", "Santa Ana", "San Miguel", "La Libertad", "Usulután"
+    };
+
+    // Campo respaldo
+    private string _selectedCity = "San Salvador";
+    private async Task SelectCity(string city)
+    {
+        _selectedCity = city;
+        await LoadForecastAsync();
+        StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,11 +66,44 @@ else
 
         try
         {
-            current = await http.GetFromJsonAsync<CurrentWeather>("/weather/current");
+            current = await http.GetFromJsonAsync<CurrentWeather>($"/weather/current?city={Uri.EscapeDataString(_selectedCity)}");
+            StateHasChanged();
         }
         catch (Exception ex)
         {
             Console.WriteLine("Error: " + ex.Message);
         }
     }
+    private async Task LoadForecastAsync()
+    {
+        var http = ClientFactory.CreateClient("WeatherApi");
+
+        try
+        {
+            current = await http.GetFromJsonAsync<CurrentWeather>($"/weather/current?city={Uri.EscapeDataString(_selectedCity)}");
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Error: " + ex.Message);
+        }
+
+    }
+
+    private string GetWeatherIcon(string description)
+    {
+        var lower = description.ToLower();
+
+        return lower switch
+        {
+            var d when d.Contains("clear") => "wi wi-day-sunny",
+            var d when d.Contains("cloud") => "wi wi-day-cloudy",
+            var d when d.Contains("rain") => "wi wi-rain",
+            var d when d.Contains("thunder") => "wi wi-thunderstorm",
+            var d when d.Contains("snow") => "wi wi-snow",
+            var d when d.Contains("mist") || d.Contains("fog") => "wi wi-fog",
+            _ => "wi wi-na"
+        };
+    }
+
 }
