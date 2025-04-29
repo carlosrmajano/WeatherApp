@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/04a4628b-dbe7-4f27-9239-87f8cf6c634d)# Weather App
+# Weather App
 
 Aplicación web que muestra el clima actual y el pronóstico del clima para los próximos 5 días en San Salvador. Esta aplicación utiliza la API de OpenWeatherMap para obtener los datos meteorológicos y está construida con ASP.NET Core y Blazor Server.
 
